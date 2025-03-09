@@ -16,7 +16,7 @@ def conectar():
         print("Error al conectar a la base de datos:", error)
         return None
 
-# CRUD para lineas de investigación
+# CRUD para líneas de investigación
 def crear_lineainv(conexion, clavein, nombre):
     try:
         cursor = conexion.cursor()
@@ -114,28 +114,65 @@ def eliminar_tipoproyecto(conexion, clave):
     finally:
         cursor.close()
 
+# CRUD para Profesor
+def crear_profesor(conexion, clave, nombre):
+    try:
+        cursor = conexion.cursor()
+        sql = "INSERT INTO profesor (clave, nombre) VALUES (%s, %s)"
+        cursor.execute(sql, (clave, nombre))
+        conexion.commit()
+        print(f"Profesor insertado: {clave} - {nombre}")
+    except mysql.connector.Error as error:
+        print("Error al insertar profesor:", error)
+    finally:
+        cursor.close()
+
+def leer_profesor(conexion):
+    try:
+        cursor = conexion.cursor()
+        cursor.execute("SELECT * FROM profesor")
+        registros = cursor.fetchall()
+        for prof in registros:
+            print(f"Clave: {prof[0]}, Nombre: {prof[1]}")
+    except mysql.connector.Error as error:
+        print("Error al consultar profesores:", error)
+    finally:
+        cursor.close()
+
+def actualizar_profesor(conexion, clave, nuevo_nombre):
+    try:
+        cursor = conexion.cursor()
+        sql = "UPDATE profesor SET nombre = %s WHERE clave = %s"
+        cursor.execute(sql, (nuevo_nombre, clave))
+        conexion.commit()
+        print(f"Profesor actualizado: {clave} -> {nuevo_nombre}")
+    except mysql.connector.Error as error:
+        print("Error al actualizar profesor:", error)
+    finally:
+        cursor.close()
+
+def eliminar_profesor(conexion, clave):
+    try:
+        cursor = conexion.cursor()
+        sql = "DELETE FROM profesor WHERE clave = %s"
+        cursor.execute(sql, (clave,))
+        conexion.commit()
+        print(f"Profesor eliminado: {clave}")
+    except mysql.connector.Error as error:
+        print("Error al eliminar profesor:", error)
+    finally:
+        cursor.close()
+
 def main():
     conexion = conectar()
     if conexion:
-        # Pruebas con tipo de proyecto
-        print("\nCreando tipo de proyecto...")
-        crear_tipoproyecto(conexion, "TP001", "Desarrollo de Software")
-        
-        print("\nConsultando tipos de proyecto...")
-        leer_tipoproyecto(conexion)
-        
-        print("\nActualizando tipo de proyecto TP001...")
-        actualizar_tipoproyecto(conexion, "TP001", "Investigación Científica")
-        
-        print("\nConsultando después de actualizar...")
-        leer_tipoproyecto(conexion)
-        
-        print("\nEliminando tipo de proyecto TP001...")
-        eliminar_tipoproyecto(conexion, "TP001")
-        
-        print("\nConsultando después de eliminar...")
-        leer_tipoproyecto(conexion)
-        
+        print("\nPruebas con profesores...")
+        crear_profesor(conexion, "P001", "Juan Pérez")
+        leer_profesor(conexion)
+        actualizar_profesor(conexion, "P001", "Carlos Ramírez")
+        leer_profesor(conexion)
+        eliminar_profesor(conexion, "P001")
+        leer_profesor(conexion)
         conexion.close()
         print("\nConexión cerrada.")
 
